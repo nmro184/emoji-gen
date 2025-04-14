@@ -1,0 +1,301 @@
+:root {
+  --primary-color: #646cff;
+  --primary-hover: #535bf2;
+  --background-color: #242424;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --error-color: #ff4444;
+  --error-bg: rgba(255, 68, 68, 0.1);
+  --prompt-bg: rgba(255, 255, 255, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+h1 {
+  text-align: center;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+.content-container {
+  display: flex;
+  gap: 2rem;
+  height: calc(100vh - 200px);
+  position: relative;
+  justify-content: space-between;
+  padding: 0 2rem;
+  align-items: center;
+}
+
+.input-container {
+  width: 400px;
+  padding: 2rem;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: fit-content;
+}
+
+.prompt-input {
+  width: 100%;
+  padding: 1.4rem;
+  font-size: 1.2rem;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background-color: #242424;
+  color: var(--text-color);
+  transition: border-color 0.25s;
+}
+
+.prompt-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.generate-button {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.generate-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.generate-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.result-container {
+  width: 400px;
+  padding: 1.5rem;
+  background-color: transparent;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+}
+
+.emoji-display {
+  width: 100%;
+  height: 100%;
+  max-width: 350px;
+  max-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: none;
+  overflow: hidden;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.emoji-display:hover {
+  transform: scale(1.05);
+}
+
+.generated-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-debug,
+.image-link,
+.prompt-display,
+.prompt-label,
+.prompt-text {
+  display: none;
+}
+
+.error-container {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--error-bg);
+  border-radius: 8px;
+  color: var(--error-color);
+}
+
+.error-message {
+  font-weight: bold;
+}
+
+.error-details {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.placeholder {
+  display: none;
+}
+
+/* Remove the frame visibility rule since we don't want it anymore */
+.emoji-display:has(img) {
+  background-color: transparent;
+  border: none;
+}
+
+.prompt-display {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  text-align: right;
+}
+
+.prompt-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.prompt-text {
+  margin-bottom: 15px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.prompt-text:last-child {
+  margin-bottom: 0;
+}
+
+.saved-emojis {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.saved-emojis h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.saved-emoji {
+  background: white;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.saved-emoji:hover {
+  transform: translateY(-2px);
+}
+
+.saved-emoji img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.emoji-info {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.emoji-prompt {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.emoji-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.user-email {
+  font-weight: 500;
+  color: #333;
+}
+
+.user-credits {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.sign-out-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.sign-out-button:hover {
+  background-color: #d32f2f;
+}
