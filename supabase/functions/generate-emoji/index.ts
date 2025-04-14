@@ -4,19 +4,74 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { corsHeaders } from '../_shared/cors.ts'
+import Replicate from 'npm:replicate@1.0.1'
 
 console.log("Hello from Functions!")
 
-Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+const replicate = new Replicate({
+  auth: Deno.env.get('REPLICATE_API_TOKEN'),
+})
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
   }
 
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
+  try {
+    const { prompt } = await req.json()
+
+    if (!prompt) {
+      return new Response(
+        JSON.stringify({ error: 'Prompt is required' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const prediction = await replicate.predictions.create({
+      version: "dee76b5afde21b0f01ed7925f0665b7e879c50ee718c5f78a9d38e04d523cc5e",
+      input: {
+        prompt: `A TOK emoji of a ${prompt}`,
+        apply_watermark: false
+      }
+    })
+
+    let completedPrediction = await replicate.predictions.get(prediction.id)
+    
+    while (completedPrediction.status !== "succeeded" && completedPrediction.status !== "failed") {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      completedPrediction = await replicate.predictions.get(prediction.id)
+    }
+
+    if (completedPrediction.status === "failed") {
+      throw new Error(completedPrediction.error || 'Prediction failed')
+    }
+
+    if (!completedPrediction.output || !completedPrediction.output[0]) {
+      throw new Error('No image URL in prediction output')
+    }
+
+    return new Response(
+      JSON.stringify({ imageUrl: completedPrediction.output[0] }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
+
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
+  }
 })
 
 /* To invoke locally:
