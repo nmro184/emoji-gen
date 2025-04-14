@@ -303,20 +303,20 @@ function App() {
   return (
     <div className="container">
       <div className="header">
-        <h1>ייצרן האימוגים</h1>
+        <h1>ייצרן האימוג'ים</h1>
         {profile && (
           <div className="user-info">
             <div className="user-email">{profile.email}</div>
-            <div className="user-credits">Credits: {profile.credits}</div>
+            <div className="user-credits">אשראי: {profile.credits}</div>
           </div>
         )}
         <button onClick={handleSignOut} className="sign-out-button">
-          Sign Out
+          התנתק
         </button>
       </div>
       {!isBackendHealthy && (
         <div className="error-message">
-          ⚠️ Backend server is not available. Please make sure the backend is running.
+          ⚠️ השרת לא זמין כרגע. אנא נסה שוב מאוחר יותר.
         </div>
       )}
       <div className="content-container">
@@ -325,7 +325,7 @@ function App() {
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="תאר את האימוגי שאתה מעוניין ליצור"
+            placeholder="תאר את האימוג'י שאתה רוצה ליצור"
             className="prompt-input"
             disabled={isLoading}
           />
@@ -334,7 +334,7 @@ function App() {
             className="generate-button"
             disabled={isLoading}
           >
-            {isLoading ? '...' : 'ייצר'}
+            {isLoading ? '...' : 'צור אימוג\'י'}
           </button>
           {error && (
             <div className="error-container">
@@ -352,7 +352,7 @@ function App() {
                 onError={(e) => {
                   console.error('❌ Image failed to load. URL:', generatedImage)
                   console.error('Error details:', e)
-                  setError('Failed to load the generated image')
+                  setError('לא ניתן לטעון את התמונה שנוצרה')
                 }}
               />
             ) : null}
@@ -363,7 +363,7 @@ function App() {
               <div className="prompt-text">{currentPrompt}</div>
               {translatedPrompt && (
                 <>
-                  <div className="prompt-label">Translated to English:</div>
+                  <div className="prompt-label">תרגום לאנגלית:</div>
                   <div className="prompt-text">{translatedPrompt}</div>
                 </>
               )}
@@ -372,7 +372,7 @@ function App() {
         </div>
         {savedEmojis.length > 0 && (
           <div className="saved-emojis">
-            <h2>Emojis Recently Generated</h2>
+            <h2>אימוג'ים שנוצרו לאחרונה</h2>
             <div className="emoji-grid">
               {savedEmojis.map((emoji) => (
                 <div key={emoji.id} className="saved-emoji">
@@ -380,7 +380,7 @@ function App() {
                   <div className="emoji-info">
                     <div className="emoji-prompt">{emoji.hebrew_prompt}</div>
                     <div className="emoji-date">
-                      {new Date(emoji.created_at).toLocaleDateString()}
+                      {new Date(emoji.created_at).toLocaleDateString('he-IL')}
                     </div>
                   </div>
                 </div>

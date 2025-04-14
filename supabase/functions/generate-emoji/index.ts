@@ -56,8 +56,34 @@ serve(async (req) => {
       throw new Error('No image URL in prediction output')
     }
 
+    // Remove background from the generated image
+    const imageUrl = completedPrediction.output[0]
+    console.log('Starting background removal for image:', imageUrl)
+    
+    const backgroundRemovalPrediction = await replicate.predictions.create({
+      version: "fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003",
+      input: {
+        image: imageUrl
+      }
+    })
+
+    let completedBackgroundRemoval = await replicate.predictions.get(backgroundRemovalPrediction.id)
+    
+    while (completedBackgroundRemoval.status !== "succeeded" && completedBackgroundRemoval.status !== "failed") {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      completedBackgroundRemoval = await replicate.predictions.get(backgroundRemovalPrediction.id)
+    }
+
+    if (completedBackgroundRemoval.status === "failed") {
+      throw new Error(completedBackgroundRemoval.error || 'Background removal failed')
+    }
+
+    if (!completedBackgroundRemoval.output) {
+      throw new Error('No output after background removal')
+    }
+
     return new Response(
-      JSON.stringify({ imageUrl: completedPrediction.output[0] }),
+      JSON.stringify({ imageUrl: completedBackgroundRemoval.output }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
